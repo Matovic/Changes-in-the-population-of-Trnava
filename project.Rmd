@@ -1,0 +1,17 @@
+---
+title: "Changes in the population of Trnava"
+author: 
+  - Erik Matovič
+  - Simon Kokavec
+date: November 2021
+output:
+  pdf_document: default
+  html_notebook: default
+  word_document: default
+---
+
+```{r}
+# import library tidyverse for pipelines and read dataset
+library(tidyverse)                
+data <- read_csv("data/dataset_okresTT.csv")
+```
