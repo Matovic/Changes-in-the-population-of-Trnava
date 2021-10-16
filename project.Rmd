@@ -13,5 +13,5 @@ output:
 ```{r}
 # import library tidyverse for pipelines and read dataset
 library(tidyverse)                
-data <- read_csv("data/dataset_okresTT.csv")
+data <- read_csv("data/dataset.csv")
 ```
