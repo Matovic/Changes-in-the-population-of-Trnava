@@ -6,3 +6,5 @@ project.nb.html
 .Rhistory
 .R*
 .Rproj.user
+*.Rproj
+.DS_Store
