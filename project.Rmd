@@ -15,3 +15,62 @@ output:
 library(tidyverse)                
 data <- read_csv("data/dataset.csv")
 ```
+```{r}
+# Výpočet piemernej vzidalenosti podľa svetovej strany a počet miest
+data %>%
+  select(`Vzdialenosť od Trnavy(km)`, `Svetová strana od Trnavy`) %>%
+  group_by(`Svetová strana od Trnavy`) %>%
+  summarise(priemerna_vzidalenost=mean(strtoi(`Vzdialenosť od Trnavy(km)`)),
+            pocet_obci=n())
+
+```
+
+```{r}
+# Počet narodených ľudí pre každú obec za to obdobie rokov
+prezitie = data %>%
+  select(1:57, `Svetová strana od Trnavy`) %>%
+  mutate(spolu_narodených=rowSums(across(2:29)),
+         spolu_zomretých=rowSums(across(30:57)),
+         rozdiel=spolu_narodených-spolu_zomretých
+         )%>%
+  select(1, 58, 59, 60, 61)
+```
+
+```{r}
+# Obce ktoré vymierajú samé o sebe
+total = prezitie %>%
+  filter(rozdiel < 0)
+
+```
+
+```{r}
+# Má vzdialenosť od trnavy niečo spoločné s vymieraním obcí ?
+vzdialenost = prezitie %>%
+  filter(rozdiel < 0) %>%
+  group_by(`Svetová strana od Trnavy`) %>%
+  summarise(pocet=n())
+```
+
+```{r}
+merge(total,vzdialenost, by=1)
+```
+
+```{r}
+# Rovnaká analýza v priebehu všetkých rokov a so všetkými argumentami
+priemerný_prírastok = data %>%
+  select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
+  mutate(nárast=rowSums(across(2:26))) %>%
+  select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `nárast`) %>%
+  group_by(`Svetová strana od Trnavy`) %>%
+  summarise(priemerný_prírastok = mean(`nárast`))
+```
+
+```{r}
+priemerný_prírastok=priemerný_prírastok[-4,]
+barplot(priemerný_prírastok[["priemerný_prírastok"]],ylim=c(0,500), names.arg=priemerný_prírastok[["Svetová strana od Trnavy"]])
+```
+
+```{r}
+merge(priemerný_prírastok, vzdialenost, by=1)
+```
+
