@@ -5,9 +5,7 @@ author:
   - Simon Kokavec
 date: November 2021
 output:
-  pdf_document: default
   html_notebook: default
-  word_document: default
 ---
 
 ## Import libraries and read dataset
