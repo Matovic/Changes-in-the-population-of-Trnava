@@ -1,0 +1,16 @@
+---
+title: "Changes in the population of Trnava based on migration"
+author: 
+  - Erik Matovič
+  - Simon Kokavec
+date: November 2021
+output: html_document
+---
+
+## Import libraries and read dataset
+
+```{r}
+# import library tidyverse for pipelines and read dataset
+library(tidyverse)                
+data <- read_csv("../data/dataset.csv")
+```
