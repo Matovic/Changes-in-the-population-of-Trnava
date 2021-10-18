@@ -5,3 +5,6 @@ project.nb.html
 .RData
 .Rhistory
 .R*
+.Rproj.user
+*.Rproj
+.DS_Store
