@@ -1,13 +1,10 @@
 ---
-title: "Changes in the population of Trnava"
+title: "Changes in the population of Trnava based on natural balance"
 author: 
   - Erik Matovič
   - Simon Kokavec
 date: November 2021
-output:
-  pdf_document: default
-  html_notebook: default
-  word_document: default
+output: html_document
 ---
 
 ## Import libraries and read dataset
@@ -15,7 +12,7 @@ output:
 ```{r}
 # import library tidyverse for pipelines and read dataset
 library(tidyverse)                
-data <- read_csv("data/dataset.csv")
+data <- read_csv("../data/dataset.csv")
 ```
 
 ## Average distance  
@@ -136,3 +133,4 @@ data %>%
                           ifelse(strtoi(`Vzdialenosť od Trnavy(km)`)>quantile_values[3] & strtoi(`Vzdialenosť od Trnavy(km)`) < quantile_values[4],3,4)))))
  
 ```
+
