@@ -14,3 +14,15 @@ output: html_document
 library(tidyverse)                
 data <- read_csv("../data/dataset.csv")
 ```
+
+## 
+
+```{r}
+migration_all = data %>%
+  mutate(spolu_pristahovanych = rowSums(across(86:112)),
+         spolu_odstahovanych = rowSums(across(113:139)),
+         spolu_saldo = rowSums(across(140:166)),
+         spolu_celkovy_prirastok = rowSums(across(167:193))) %>%
+  select(1, 194:198)
+```
+
