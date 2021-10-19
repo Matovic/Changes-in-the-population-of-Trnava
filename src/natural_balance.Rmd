@@ -129,7 +129,7 @@ data %>%
   group_by(`Svetová strana od Trnavy`) %>%
   filter(`Vzdialenosť od Trnavy(km)`!="x") %>%
   mutate(quantile=(ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) <= quantile_values[2] , 1,
-                   ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) > quantile_values[2] & strtoi(`Vzdialenosť od Trnavy(km)`) < test = quantile_values[3],2,
+                   ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) > quantile_values[2] & strtoi(`Vzdialenosť od Trnavy(km)`) <= quantile_values[3],2,
                           ifelse(strtoi(`Vzdialenosť od Trnavy(km)`)>quantile_values[3] & strtoi(`Vzdialenosť od Trnavy(km)`) < quantile_values[4],3,4)))))
  
 ```
