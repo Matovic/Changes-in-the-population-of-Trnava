@@ -15,7 +15,9 @@ library(tidyverse)
 data <- read_csv("../data/dataset.csv")
 ```
 
-## 
+## Migration in all years
+Zistenie pristahovanych, odstahovanych a celkove migracne saldo za cele obdobie
+zoradené od najväčšieho salda.
 
 ```{r}
 migration_all = data %>%
@@ -23,6 +25,37 @@ migration_all = data %>%
          spolu_odstahovanych = rowSums(across(113:139)),
          spolu_saldo = rowSums(across(140:166)),
          spolu_celkovy_prirastok = rowSums(across(167:193))) %>%
-  select(1, 194:198)
+  select(1, 194:198) %>%
+  arrange(spolu_saldo)
+
+# remove last row, because it is NA
+migration_all <- migration_all[1:(dim(migration_all)[1] - 1),]
+```
+
+## Plot distance from Trnava with migration
+
+```{r}
+n_row = dim(migration_all)[1] # number of rows
+n_col = dim(migration_all)[2] # number of cols
+
+plot(
+  x=migration_all[[2]][2:n_row],      # take x as distance apart from TT
+  y=migration_all[[n_col]][2:n_row],  # take y as migracne saldo aparto from TT
+  xlab = "vzdialenosť od TT",
+  ylab = "migračné saldo"
+  )
+```
+
+
+```{r}
+migration_all %>% 
+  filter(spolu_saldo > 0) %>%
+  summarise(sum(spolu_saldo))
+```
+
+
+
+```{r}
+migration_all[1,n_col]
 ```
 
