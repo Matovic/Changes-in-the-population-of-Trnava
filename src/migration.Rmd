@@ -18,6 +18,7 @@ data <- read_csv("../data/dataset.csv")
 ## Migration in all years
 Zistenie pristahovanych, odstahovanych a celkove migracne saldo za cele obdobie
 zoradené od najväčšieho salda.
+Migračné saldo = rozdiel medzi pristahovanými a odstahovanými 
 
 ```{r}
 migration_all = data %>%
@@ -32,19 +33,29 @@ migration_all = data %>%
 migration_all <- migration_all[1:(dim(migration_all)[1] - 1),]
 ```
 
-## Plot distance from Trnava with migration
+## Plot distance from Trnava with migration with linear regression
 
 ```{r}
 n_row = dim(migration_all)[1] # number of rows
 n_col = dim(migration_all)[2] # number of cols
 
+distance = strtoi(migration_all[[2]][2:n_row]) # take x as distance apart from TT
+saldo = migration_all[[n_col]][2:n_row] # take y as migracne saldo aparto from TT
+
+fit <- lm(saldo ~ distance, data=migration_all)
+
 plot(
-  x=migration_all[[2]][2:n_row],      # take x as distance apart from TT
-  y=migration_all[[n_col]][2:n_row],  # take y as migracne saldo aparto from TT
-  xlab = "vzdialenosť od TT",
-  ylab = "migračné saldo"
+  x=distance,      
+  y=saldo,  
+  xlab = "vzdialenosť od TT (km)",
+  ylab = "migračné saldo",
+  col="red",  # nastavenie farby bodiek
+  pch=16,      # vyfarbenie bodiek
+  main = "Migračne saldo za sledované obdobie v zavislosti od vzdialenosti od TT",
+  abline(fit)   # add best fit line in graph
   )
 ```
+
 
 
 ```{r}
