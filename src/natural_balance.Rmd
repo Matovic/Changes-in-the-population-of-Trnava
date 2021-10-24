@@ -122,7 +122,7 @@ temporary=data[-1,"Vzdialenosť od Trnavy(km)"]
 quantile_values=quantile(strtoi(temporary[["Vzdialenosť od Trnavy(km)"]]))
 quantile_values[5]
 
-data %>%
+quantiled_data=data %>%
   select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
   mutate(nárast=rowSums(across(2:26))) %>%
   select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `nárast`) %>%
@@ -132,5 +132,54 @@ data %>%
                    ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) > quantile_values[2] & strtoi(`Vzdialenosť od Trnavy(km)`) <= quantile_values[3],2,
                           ifelse(strtoi(`Vzdialenosť od Trnavy(km)`)>quantile_values[3] & strtoi(`Vzdialenosť od Trnavy(km)`) < quantile_values[4],3,4)))))
  
+quantiled_data
+```
+
+```{r}
+quantiled_data_splited=split(quantiled_data, quantiled_data$quantile)
+quantiled_data_splited
+```
+
+## Prirodzený nárast celkovo
+
+```{r}
+x=quantiled_data[-1,]$`Vzdialenosť od Trnavy(km)`
+y=quantiled_data[-1,]$`nárast`
+
+fit <- lm( `Vzdialenosť od Trnavy(km)` ~ `nárast` , quantiled_data[-1,])
+
+plot(
+  y,
+  x,
+  xlab = "Prirodzený nárast",
+  ylab = "vzdialenosť od TT"
+)
+abline(fit, col="Blue")
+
+```
+
+```{r}
+lm(`Vzdialenosť od Trnavy(km)`  ~ `nárast`, data=quantiled_data[-1,])
+lm(`nárast` ~ `Vzdialenosť od Trnavy(km)` , data=quantiled_data[-1,])
+```
+
+## Prirodzený nárast pre kvantil 1
+
+```{r}
+
+# Veľmi zaujímavé nakoľko tento graf ide naopak ako celkový
+temp=quantiled_data_splited[1]
+
+
+plot(
+  temp[[1]][-1,]$nárast,
+  temp[[1]][-1,]$`Vzdialenosť od Trnavy(km)`,
+  xlab = "Prirodzený nárast",
+  ylab = "vzdialenosť od TT"
+)
+abline(lm(temp[[1]][-1,]$`Vzdialenosť od Trnavy(km)` ~ temp[[1]][-1,]$nárast), col="Blue")
+
+
+
 ```
 
