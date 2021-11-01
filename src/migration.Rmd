@@ -31,6 +31,7 @@ migration_all = data %>%
 
 # remove last row, because it is NA
 migration_all <- migration_all[1:(dim(migration_all)[1] - 1),]
+migration_all
 ```
 
 ## Plot distance from Trnava with migration with linear regression
@@ -57,6 +58,14 @@ plot(
 ```
 
 
+## Trnava - saldo
+
+```{r}
+tt_spolu_saldo = migration_all[1,n_col]
+tt_spolu_saldo
+```
+
+## Celkove saldo
 
 ```{r}
 migration_all %>% 
@@ -64,9 +73,42 @@ migration_all %>%
   summarise(sum(spolu_saldo))
 ```
 
-
+## Odstahovany in all years
+Zistenie odstahovanych z obcií za sledované obdobie - iba tie obce, ktoré sa "vystahovavaju"
 
 ```{r}
-migration_all[1,n_col]
+odstahovany_all = migration_all %>%
+  filter(spolu_saldo < 0)
+odstahovany_all
 ```
 
+## Number of odstahovanych municipalities based on cardinal directions 
+Má vzdialenosť od Trnavy niečo spoločné s vystahovanim z obcí ?
+
+```{r}
+odstahovany_muni_total = odstahovany_all %>%
+  group_by(`Svetová strana od Trnavy`) %>%
+  summarise(odstahovany_municipalities=n())
+odstahovany_muni_total
+```
+
+## Mean saldo increase of population in all years
+Zistenie nárastu populácie s migračným saldom podľa svetovych stran.
+
+```{r}
+saldo_mean_direction = migration_all %>%
+  group_by(`Svetová strana od Trnavy`) %>%
+  summarise(mean_spolu_saldo = mean(`spolu_saldo`))
+saldo_mean_direction
+```
+
+
+## Plot saldo of population in all years based on directions
+
+```{r}
+#saldo_increase_all=saldo_increase_all[-4,]
+min_saldo_mean = min(saldo_mean_direction['mean_spolu_saldo'])
+max_saldo_mean = max(saldo_mean_direction['mean_spolu_saldo'])
+# min delene 100, aby bol vydiet narast 
+barplot(saldo_mean_direction[["mean_spolu_saldo"]],ylim=c(min_saldo_mean / 100, max_saldo_mean), names.arg=saldo_mean_direction[["Svetová strana od Trnavy"]])
+```
