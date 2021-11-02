@@ -112,3 +112,12 @@ max_saldo_mean = max(saldo_mean_direction['mean_spolu_saldo'])
 # min delene 100, aby bol vydiet narast 
 barplot(saldo_mean_direction[["mean_spolu_saldo"]],ylim=c(min_saldo_mean / 100, max_saldo_mean), names.arg=saldo_mean_direction[["Svetová strana od Trnavy"]])
 ```
+
+## TODO
+ - cross-validation
+ - pridat nejake poznamky, text pre lepšie pochopenie
+ - samplovat a spravit t-test pre formalny dokaz
+ - mestska funkcna oblast - vyselektovat 15 obcii a pozriet sa na ne
+ - sample na 50% bodov, koeficient B1 neni nulovy, t-test ako dokaz
+ - aka je priemerna vzdialenost bodov od priamky
+ - validiaca - ak 5%, tak je to ok, opačne neni linearna vzdialenost bodov od priamky, outlinery vyhodit
