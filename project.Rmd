@@ -1,136 +1,276 @@
 ---
-title: "Changes in the population of Trnava"
+title: "Zmena stavu obyvateľstva mesta Trnava v závislosti od obcií okresu za obdobie 1993-2020"
 author: 
   - Erik Matovič
   - Simon Kokavec
 date: November 2021
-output:
-  html_notebook: default
+output: html_document
 ---
 
-## Import libraries and read dataset
+# Importovanie knižníc a načítanie datasetu
+Importovanie potrebných knižníc a datasetu. Na prácu s projektom sme vybrali knižnicu *_tidyverse_*, ktorá poskytujé skvelé nástroje na prácu s dátami. Knižnica *_gmodels_* je použitá pri validácii hypotézy.
 
 ```{r}
-# import library tidyverse for pipelines and read dataset
-library(tidyverse)                
-data <- read_csv("data/dataset.csv")
+library(tidyverse)  
+library(gmodels)
+data_nb <- read_csv("../data/dataset.csv")
 ```
 
-## Average distance  
-Výpočet piemernej vzdialenosti podľa svetovej strany a počet miest
+# Vypočítanie priemernej vzdialenosti obcí od Trnavy
+Výpočítali sme piemernú vzdialenosť podľa svetovej strany. Táto priemerná vzdialenosť nám určí, ktorá svetová strana má obce vzdialenejšie od Trnavy a naopak, ktorá svetová strana má obce bližšie k mestu Trnava. K týmto výpočtom sme pridali počet obcí ktoré sa nachádzajú na danej svetovej strane vzhľadom k mestu Trnava.
 
 ```{r}
-average_distance = data %>%
+averageDistance_nb = data_nb %>%
   select(`Vzdialenosť od Trnavy(km)`, `Svetová strana od Trnavy`) %>%
   group_by(`Svetová strana od Trnavy`) %>%
   summarise(priemerna_vzdialenost=mean(strtoi(`Vzdialenosť od Trnavy(km)`)),
             pocet_obci=n())
-average_distance
+
+# 4. riadok vynechaný kvôli mestu trnava
+averageDistance_nb[-4,]
 ```
 
-## Natural balance in all years
-Zistenie narodených, zomretých a prirodzený prírastok obyvateľstva za cele obdobie.  
-Natural balance - the difference between the number of births and the number of deaths recorded over a period
+# Prirodzený prírastok za celé obdobie
+Zistenie narodených, zomretých a prirodzený prírastok obyvateľstva za celé skúmané obdobie. V datasete sa stĺpec prirodzený prírastok za daný rok už nachádza avšak my sme si tieto informácie pre istotu overili výpočtom cez počet narodených a počet zomretých aby sme predišli chybám vo výpočtoch v datasete. Tento novovypočítaný údaj prirodzený prírastok návm hovorí, ktoré obce prirodzene vymierajú a naopak, ktoré obce sa aj bez migrácie rozrastajú. 
 
 ```{r}
-natural_balance_all = data %>%
-  select(1:57, `Svetová strana od Trnavy`) %>%
+naturalBalance_all = data_nb %>%
+  select(1:57, `Vzdialenosť od Trnavy(km)`, `Svetová strana od Trnavy`) %>%
   mutate(spolu_narodených=rowSums(across(2:29)),
          spolu_zomretých=rowSums(across(30:57)),
-         spolu_prirodzeny_prirastok=spolu_narodených-spolu_zomretých
-         )%>%
-  select(1, 58, 59, 60, 61)
-natural_balance_all
+         spolu_prirodzený_prírastok=spolu_narodených-spolu_zomretých
+         ) %>%
+  select(1, 58, 59, 60, 61, 62) 
+
+naturalBalance_all[-0:-2,]
+
 ```
 
-## Natural decrease in all years
-Zistenie prirodzeného úbytku obcií za sledované obdobie - iba tie obce, ktoré "vymierajú"
+# Prirodzený úbytok za celé obdobie
+Nakoľko sme si v dátach všimli že prevažná časť obcí z okolia trnavy v skúmanom období pociťuje pokles obyvateľstva tak sme ich vyfiltrovali a zrátali. Z celkového počtu 44 obcí až 34 obcí prirodzene vymiera.
 
 ```{r}
-natural_decrease_all = natural_balance_all %>%
-  filter(spolu_prirodzeny_prirastok < 0)
-natural_decrease_all
+
+naturalDecrease_all = naturalBalance_all[-0:-2,] %>%
+  filter(spolu_prirodzený_prírastok < 0)
+naturalDecrease_all
+nrow(naturalDecrease_all)
+
 ```
 
-## Number of natural decrease municipalities based on cardinal directions 
-Má vzdialenosť od trnavy niečo spoločné s vymieraním obcí ?
+# Spočítanie vymierajúcich obcí na základe svetovej strany
+Tieto dáta niesu lichotivé a preto sme sa začali zaoberať touto problematikou hlbšie a snažili sme sa prísť na možné príčiny a korelácie. Skúsili sme zrátať počet vymierajúcich obcí v súlade s jednotlivými svetovými stranami.
 
 ```{r}
 dying_muni_total = natural_decrease_all %>%
   group_by(`Svetová strana od Trnavy`) %>%
-  summarise(dying_municipalities=n())
+  summarise(počet_vymierajúcich_obcí=n())
+
 dying_muni_total
 ```
 
-## ?? 
+
+# Priemerný prirodzený prívlastok na základe svetovej strany
+Svetová strana môže ovplyvňovať množstvo faktorov a preto sme sa rozhodli preskúmať koreláciu svetovej strany s vymieraním obcí hlbšie. Vypočítali sme priemerný prirodzený pokles/nárast obyvateľstva zoskupený podľa svetovej strany. Všetky svetové strany vykazujú vyrazný pokles v prirodzenom počte obyvateľstva. 
 
 ```{r}
-merge(natural_decrease_all,dying_muni_total, by=1)
-```
-
-## Total increase of population in all years
-Zistenie nárastu populácie aj s migračným saldom a prirodzeným prírastkom.
-
-```{r}
-total_increase_all = data %>%
-  select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
-  mutate(increase=rowSums(across(2:26))) %>%
+naturalIncrease_all = data_nb %>%
+  select(1:57, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
+  mutate(spolu_narodených=rowSums(across(2:29)),
+         spolu_zomretých=rowSums(across(30:57)),
+         increase=spolu_narodených-spolu_zomretých
+         ) %>%
   select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `increase`) %>%
   group_by(`Svetová strana od Trnavy`) %>%
-  summarise(total_increase_all = mean(`increase`))
-total_increase_all
+  summarise(priemerný_pokles = mean(`increase`))
+
+naturalIncrease_all <- naturalIncrease_all[-4,]
+naturalIncrease_all
+
 ```
 
-## Plot total increase of population in all years based on directions
-
+# Vizualicáia priemerného poklesu obcí
+Tieto dáta sme vyzualizovali na grafe nižšie.
 ```{r}
-total_increase_all=total_increase_all[-4,]
-barplot(total_increase_all[["total_increase_all"]],ylim=c(0,500), names.arg=total_increase_all[["Svetová strana od Trnavy"]])
+barplot(naturalIncrease_all[["priemerný_pokles"]],ylim=c(-200,0), names.arg=naturalIncrease_all[["Svetová strana od Trnavy"]])
 ```
 
-## Má svetová strana od Trnavy niečo s vymieraním obcií a celkovým prírastkom?
+Vypočítané dáta sme spojili do jednej tabuľky pre zvýšenie prehľadnosti. Predpokladali sme že obce bližšie k mestu Bratislava(západ) budú mať nižši pokles avšak táto hypotéza už na prvý pohľad nieje pravdou nakoľko najnižší pokles má sever Trnavi. Avšak na druhej strane nás oslovila priemerná vzdialenosť obce od mesta trnava v spojení s priemerným poklesom obyvateľstva. Môžeme v tabuľke hneď na prvý pohľad pozorovať že čím vyššia je priemerná vzdialenosť obcí tým pomalšie vymierajú. 
+Preto sme sa touto problematikou chceli zaoberať aj dalej nakoľko sme v tom videli možnú hypotézu.
 
 ```{r}
-merge(total_increase_all, dying_muni_total, by=1)
+merge(averageDistance_nb[-4,], naturalIncrease_all)
 ```
 
-## ??
+
+# Rozdelenie obcí na kvantily podľa vzdialenosti obcí od mesta Trnava
+### Hypotéza - Obce vzdialenejšie od mesta trnava vymierajú pomalšie.
+Tejto hypotéze sme sa rozhodli venovať a preto sme sa rozhodli rozdeliť vymierajúce obce do 4 kvantilov podľa vzdialenosti od mesta trnava. Prvý kvantil reprezentuje obce najbližšie k mestu trnava a štvrtý najďalej. 
 
 ```{r}
-data %>%
-  select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
-  mutate(nárast=rowSums(across(2:26))) %>%
-  select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `nárast`) %>%
-  group_by(`Svetová strana od Trnavy`) %>%
-  filter(`Svetová strana od Trnavy` == "Z") 
-```
 
-## ??
+temporary_nb=data_nb[-1,"Vzdialenosť od Trnavy(km)"]
+quantile_values=quantile(strtoi(temporary_nb[["Vzdialenosť od Trnavy(km)"]]))
 
-```{r}
-data %>%
-  select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
-  mutate(nárast=rowSums(across(2:26))) %>%
-  select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `nárast`) %>%
-  group_by(`Svetová strana od Trnavy`) %>%
-  filter(`Svetová strana od Trnavy` == "V") 
-```
 
-## ?? 
-
-```{r}
-temporary=data[-1,"Vzdialenosť od Trnavy(km)"]
-quantile_values=quantile(strtoi(temporary[["Vzdialenosť od Trnavy(km)"]]))
-quantile_values[5]
-
-data %>%
-  select(1,167:193, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`) %>%
-  mutate(nárast=rowSums(across(2:26))) %>%
-  select(1, `Vzdialenosť od Trnavy(km)`,`Svetová strana od Trnavy`, `nárast`) %>%
-  group_by(`Svetová strana od Trnavy`) %>%
-  filter(`Vzdialenosť od Trnavy(km)`!="x") %>%
+naturalBalance_quantiled = naturalBalance_all %>% 
   mutate(quantile=(ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) <= quantile_values[2] , 1,
-                   ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) > quantile_values[2] & strtoi(`Vzdialenosť od Trnavy(km)`) < test = quantile_values[3],2,
-                          ifelse(strtoi(`Vzdialenosť od Trnavy(km)`)>quantile_values[3] & strtoi(`Vzdialenosť od Trnavy(km)`) < quantile_values[4],3,4)))))
- 
+                   ifelse(strtoi(`Vzdialenosť od Trnavy(km)`) > quantile_values[2] & strtoi(`Vzdialenosť od Trnavy(km)`) <= quantile_values[3],2,
+                   ifelse(strtoi(`Vzdialenosť od Trnavy(km)`)>quantile_values[3] & strtoi(`Vzdialenosť od Trnavy(km)`) < quantile_values[4],3,4))))) %>% 
+  filter(spolu_prirodzený_prírastok < 0)
+
+naturalBalance_quantiled
+
 ```
+
+# Rozdelenie kvantilových dát do separátnych tabuliek
+Tieto rozkvantilované dáta sme sa rozhodli rozdeliť do samostatných dataframov podľa kvantilu pre vyššiu prehľadnosť.
+```{r}
+quantiled_data_splited=split(naturalBalance_quantiled[-0:-2,], naturalBalance_quantiled[-0:-2,]$quantile)
+quantiled_data_splited
+```
+
+# Vytovrenie linárnej regresie
+Vytvorenie lineárnej regresie. Ďalším našim myšlienkovým pochodom sme sa rozhodli prikloniť k lineárnej regresii. Túto metódu sme sa rozhodli použiť pre všetky dáta a pre tento výpočet zanedbať kvantili a pracovať iba so samotnou vzialenosťou. 
+- Zavíslosť vzdialenosti od Trnavi s prirodzeným prírastkom
+
+```{r}
+
+distance_nb = strtoi(naturalBalance_quantiled[-0:-2,]$`Vzdialenosť od Trnavy(km)`)
+increase_nb = naturalBalance_quantiled[-0:-2,]$`spolu_prirodzený_prírastok`
+
+fit_nb <- lm(increase_nb ~  distance_nb , data=naturalBalance_quantiled[-0:-2,])
+
+plot(
+  distance_nb,
+  increase_nb,
+  xlab = "vzdialenosť od TT",
+  ylab = "prirodzený úbytok",
+  col="red",  
+  pch=16,
+  abline(fit_nb),
+  main = "Prirodzený úbytok v závislosti od vzdialenosti obce od mesta Trnava(km)",
+  
+)
+
+```
+
+Z grafu môžeme jasne vidieť že naša hypotéza vyzerá byť pravdivá. Môžeme pozorovať lineárnu závislosť, ktorá hovorí o narastajúcej vzdialenosti spolu s klesajúcim úbytkom.
+
+# Krížová validácia
+Následne sme sa rozhodli vykonať krížovú validáciu a overiť svoje výsledky.
+
+```{r}
+
+data_nb <- map(1:40, ~naturalBalance_quantiled[sort(sample(1:dim(naturalBalance_quantiled)[1], size = 0.5*dim(naturalBalance_quantiled)[1])),])
+models <- map(data_nb, ~lm(.x$`Vzdialenosť od Trnavy(km)` ~ .x$`spolu_prirodzený_prírastok` ))
+listOfFunctions <- list(coefficients= coef, residuals = residuals)
+f <- function(x) {sapply(listOfFunctions, function(g) g(x))}
+extractedData <- map(models, ~f(.x))
+
+
+sd(map_dbl(models, ~coef(.x)[1]))
+sd(map_dbl(models, ~coef(.x)[2]))
+
+rss <- map_dbl(models, ~ sum(resid(.x)^2))
+rse <- map_dbl(rss, ~sqrt(.x/(0.5*dim(naturalBalance_quantiled)[1]-2)))
+
+boxplot(rss)
+boxplot(rse)
+```
+
+
+```{r}
+
+
+cfs <- map_dbl(models, ~ coef(.x)[2])
+t.test(cfs, mu=0)
+
+```
+
+Tento istý test sme sa rozhodli vykonať pre jednotlivé kvantily a vykonať pre každý kvantil zvlášť lineárnu regresiu.
+# Prirodzený úbytok pre kvantil 1
+
+```{r}
+
+temp=quantiled_data_splited[1]
+
+fit_nb_q1 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vzdialenosť od Trnavy(km)`) , data=temp)
+
+plot(
+  temp[[1]]$`Vzdialenosť od Trnavy(km)`,
+  temp[[1]]$`spolu_prirodzený_prírastok`,
+  xlab = "vzdialenosť od TT",
+  ylab = "Prirodzený úbytok",
+  abline(fit_nb_q1),
+  col="red",  
+  pch=16,
+  main = "Prirodzený úbytok pre Kvantil 1",
+)
+
+```
+
+# Prirodzený úbytok pre kvantil 2
+
+```{r}
+
+temp=quantiled_data_splited[2]
+
+fit_nb_q2 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vzdialenosť od Trnavy(km)`) , data=temp)
+
+plot(
+  temp[[1]]$`Vzdialenosť od Trnavy(km)`,
+  temp[[1]]$`spolu_prirodzený_prírastok`,
+  xlab = "vzdialenosť od TT",
+  ylab = "Prirodzený úbytok",
+  abline(fit_nb_q2),
+  col="red",  
+  pch=16,
+  main = "Prirodzený úbytok pre Kvantil 2",
+)
+
+```
+
+# Prirodzený úbytok pre kvantil 3
+
+```{r}
+
+temp=quantiled_data_splited[3]
+
+fit_nb_q3 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vzdialenosť od Trnavy(km)`) , data=temp)
+
+plot(
+  temp[[1]]$`Vzdialenosť od Trnavy(km)`,
+  temp[[1]]$`spolu_prirodzený_prírastok`,
+  xlab = "vzdialenosť od TT",
+  ylab = "Prirodzený úbytok",
+  abline(fit_nb_q3),
+  col="red",  
+  pch=16,
+  main = "Prirodzený úbytok pre Kvantil 3",
+)
+
+```
+
+# Prirodzený úbytok pre kvantil 4
+
+```{r}
+
+# Tento graf je veľmi zaujímavý nakoľko ide naopak ako ostatné
+temp=quantiled_data_splited[4]
+
+fit_nb_q4 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vzdialenosť od Trnavy(km)`) , data=temp)
+
+plot(
+  temp[[1]]$`Vzdialenosť od Trnavy(km)`,
+  temp[[1]]$`spolu_prirodzený_prírastok`,
+  xlab = "vzdialenosť od TT",
+  ylab = "Prirodzený úbytok",
+  abline(fit_nb_q4),
+  col="red",  
+  pch=16,
+  main = "Prirodzený úbytok pre Kvantil 4",
+)
+
+```
+Z tohoto pozorovania môžeme usúdiť že naša hypotéza je vo všobecnosti pravdivá avšak posledný kvantil ukazuje že obce vzdialené viac ako 15km budú nasledovať opačný trend. Tieto obce začnú vymierať rýchlejšie ako obce ktoré sú v vo vzdialenosti do 15km od mesta Trnava
