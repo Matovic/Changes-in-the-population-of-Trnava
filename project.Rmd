@@ -527,6 +527,7 @@ Z prirodzeného prírastku za sledované obdobie sme zistili:
  - Trnava ako mesto nevymiera, naopak viac obyvateľov sa v meste rodí ako zomiera
  - väčšina obcií v okrese zažíva prirodzený úbytok obyvateľstva
  - najväčší prirodzený prírastok je v meste Trnava, druhý najväčší je v obcii Jaslovské Bohunice, ktoré sú známe jadrovou elektrárňou, a teda aj pracovnými príležitosťami v obcii
- - 
+ - pomocou lineaárnej regresie overenej krížovou validáciou bolo zistené, že so zvyšujúcou sa vzdialenosťou od mesta Trnava sa prirodzený úbytok pomaly znižuje
+ - lineárna regresia aplikovaná na jednotlivé vzdialenostné sektory ukázala opačný trend pri obciach vzdialených viac ako 15km od mesta Trnava - prirodzený úbytok začína opäť narastať
 
 Interpretácie správania obyvateľstva nie sú jednoduché, ale použitím štatistických metód sa nám podarilo ukázať, že ľudia hľadajú dostupnosť vidieckeho bývania, avšak chcú si zachovať mestský charakter a predovšetkým služby mesta ako dostupnosť vzdelávacích inštitúcií a pracovných príležitostí, pretože mestá pre ľudí figurujú ako kultúrne, športové, vzdelávacie a pracovné centrá.
