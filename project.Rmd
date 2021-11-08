@@ -236,7 +236,7 @@ fit_nb_q1 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vz
 plot(
   temp[[1]]$`Vzdialenosť od Trnavy(km)`,
   temp[[1]]$`spolu_prirodzený_prírastok`,
-  xlab = "vzdialenosť od TT",
+  xlab = "Vzdialenosť od TT (km)",
   ylab = "Prirodzený úbytok",
   abline(fit_nb_q1),
   col="red",  
@@ -257,7 +257,7 @@ fit_nb_q2 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vz
 plot(
   temp[[1]]$`Vzdialenosť od Trnavy(km)`,
   temp[[1]]$`spolu_prirodzený_prírastok`,
-  xlab = "vzdialenosť od TT",
+  xlab = "Vzdialenosť od TT (km)",
   ylab = "Prirodzený úbytok",
   abline(fit_nb_q2),
   col="red",  
@@ -278,7 +278,7 @@ fit_nb_q3 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vz
 plot(
   temp[[1]]$`Vzdialenosť od Trnavy(km)`,
   temp[[1]]$`spolu_prirodzený_prírastok`,
-  xlab = "vzdialenosť od TT",
+  xlab = "Vzdialenosť od TT (km)",
   ylab = "Prirodzený úbytok",
   abline(fit_nb_q3),
   col="red",  
@@ -300,7 +300,7 @@ fit_nb_q4 <- lm(temp[[1]]$`spolu_prirodzený_prírastok` ~  strtoi(temp[[1]]$`Vz
 plot(
   temp[[1]]$`Vzdialenosť od Trnavy(km)`,
   temp[[1]]$`spolu_prirodzený_prírastok`,
-  xlab = "vzdialenosť od TT",
+  xlab = "Vzdialenosť od TT (km)",
   ylab = "Prirodzený úbytok",
   abline(fit_nb_q4),
   col="red",  
@@ -309,6 +309,7 @@ plot(
 )
 
 ```
+
 Z tohoto pozorovania môžeme usúdiť že naša hypotéza je vo všobecnosti pravdivá, avšak posledný kvantil ukazuje že obce vzdialené viac ako 15 kilometrov budú nasledovať opačný trend. Tieto obce začnú vymierať rýchlejšie ako obce ktoré sú vo vzdialenosti do 15 kilometrov od mesta Trnava.  
 
 # Migrácia
@@ -527,7 +528,13 @@ Z prirodzeného prírastku za sledované obdobie sme zistili:
  - Trnava ako mesto nevymiera, naopak viac obyvateľov sa v meste rodí ako zomiera
  - väčšina obcií v okrese zažíva prirodzený úbytok obyvateľstva
  - najväčší prirodzený prírastok je v meste Trnava, druhý najväčší je v obcii Jaslovské Bohunice, ktoré sú známe jadrovou elektrárňou, a teda aj pracovnými príležitosťami v obcii
- - pomocou lineaárnej regresie overenej krížovou validáciou bolo zistené, že so zvyšujúcou sa vzdialenosťou od mesta Trnava sa prirodzený úbytok pomaly znižuje
+ - pomocou lineárnej regresie overenej krížovou validáciou bolo zistené, že so zvyšujúcou sa vzdialenosťou od mesta Trnava sa prirodzený úbytok pomaly znižuje
  - lineárna regresia aplikovaná na jednotlivé vzdialenostné sektory ukázala opačný trend pri obciach vzdialených viac ako 15km od mesta Trnava - prirodzený úbytok začína opäť narastať
 
-Interpretácie správania obyvateľstva nie sú jednoduché, ale použitím štatistických metód sa nám podarilo ukázať, že ľudia hľadajú dostupnosť vidieckeho bývania, avšak chcú si zachovať mestský charakter a predovšetkým služby mesta ako dostupnosť vzdelávacích inštitúcií a pracovných príležitostí, pretože mestá pre ľudí figurujú ako kultúrne, športové, vzdelávacie a pracovné centrá.
+Interpretácie správania obyvateľstva nie sú jednoduché, ale použitím štatistických metód sa nám podarilo ukázať, že ľudia hľadajú dostupnosť vidieckeho bývania, avšak chcú si zachovať mestský charakter a predovšetkým služby mesta ako dostupnosť vzdelávacích inštitúcií a pracovných príležitostí, pretože mestá pre ľudí figurujú ako kultúrne, športové, vzdelávacie a pracovné centrá. Túto skutočnosť dokazuje aj znižujuci prirodzený úbytok v sledovanom obdobií v obciach do 15 kilometrov od mesta, čo znamená, že mesto Trnava v okruhu 15 kilometrov od svojich hraníc nahrádza služby obyvateľom aj iným obciam, pravdepodobne sa jedná o služby, ktoré využívajú predovšetkým mladé rodiny ako vzdelávacie služby alebo voľnočasové aktivity pre deti a mládež.  
+
+Alternatívne môže byť aj nenahlasovanie trvalého pobytu deťom v obciach, čo viac koreluje so zistenými informáciami z migračného salda. Model migračného salda ukázal, že s bližšou vzdialenosťou obce k mestu je vyššie migračné saldo za sledované obdobie, avšak prirodzený úbytok je vyšší čím je obec bližšie k mestu. Prikláňame sa k názoru, že rodičia svojim potomkom trvalý pobyt nehlásia v obci, do ktorej sa prisťahovali, avšak trvalý pobyt nechávaju deťom v meste, pravdepodobne z dôvodu kapacít materských škôl a jaslí v meste, častokrát obce buď nemajú školské inštitúcie alebo nemajú dostatočnú kapacitu, preto rodičia pravdsepodobne počítajú s možnosťou návštevy školského zariadenia pre svoje dieťa v Trnave, čo môže byť výhodnejšie aj pre obyvateľov v produktívnom veku pracujúcich v meste.  
+
+V okruhu viac ako 15 kilometrov od hraníc mesta Trnava už narastá prirodzený úbytok, čo znamená, že v týchto obciach nie je motivácia pre obyvateľov zakladať si rodiny a aj napriek pozitívnemu migračnému saldu sa do daných obcií s najväčšou pravdepodobnosťou sťahujú ľudia v poproduktívnom veku alebo v produktívnom veku, avšak už s dospelými potomkami.  
+
+Zároveň sme zistili, že obyvatelia okresu Trnava sa nesťahujú preč z okresu, naopak, do okresu sa za sledované obdobie prisťahovalo viacej obyvateľov, čo môžeme interpretovať aj so záporným migračným saldom mesta Trnava ako preskupenie obyvateľov v rámci okresu. Obyvatelia teda neodchádzajú z okresu, ale len z mesta do okolitých obcií vplyvom, pravdepodobne, lacnejších pozemkov v rámci individuálnej bytovej výstavby vo vidieckych obciach než je v krajsom meste. Zároveň drvivá väčšina obcií v okrese zažíva prirodzený úbytok, môžeme konštatovať prestarnuté obyvateľstvo v obciach, čo podporuje teóriu o meste Trnava ako centre pre obyvateľov predproduktívneho a produktívneho veku.
