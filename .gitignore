@@ -8,3 +8,5 @@ project.Rproj
 *.Rproj
 .DS_Store
 *.html
+*.pdf
+*.docx
