@@ -7,7 +7,6 @@ project.Rproj
 .Rproj.user
 *.Rproj
 .DS_Store
-*.html
 *.pdf
 *.docx
 *.zip
