@@ -25,6 +25,8 @@ Dataset sme si vybrali z verejnej databázy Štatistického úradu Slovenskej re
 Zo začiatku je nutné importovanie potrebných knižníc a načítanie datasetu. Na prácu s projektom sme vybrali knižnicu *_tidyverse_*, ktorá poskytujé vhodné nástroje na prácu s dátami. Knižnica *_gmodels_* je použitá pri validácii hypotézy.
 
 ```{r}
+# for rendering run this command in console:
+# rmarkdown::render("project.Rmd", "html_notebook")
 library(tidyverse)  
 library(gmodels)
 data <- read_csv("data/dataset.csv")
