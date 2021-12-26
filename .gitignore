@@ -11,3 +11,6 @@ project.Rproj
 *.docx
 *.zip
 *.html
+
+# do not ignore documentation
+!*.nb.html
